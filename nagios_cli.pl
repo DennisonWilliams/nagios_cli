@@ -198,12 +198,16 @@ sub issues {
 
 				# Don't care if the issue has not existed for longer then $DURATION minutes
 				((time()-$djson->{'content'}{$host}{'services'}{$service}{'last_state_change'})/60) >= $DURATION
+
 			) {
 				# While we will print the issue in a soft state we only alarm in a hard state
-				if ($djson->{'content'}{$host}{'services'}{$service}{'current_state'} == $djson->{'content'}{$host}{'services'}{$service}{'last_hard_state'}) {
+				print $sct ." : ". $host ." : ". $service ." : ". $djson->{'content'}{$host}{'services'}{$service}{'plugin_output'} ."\n";
+				if (
+					$djson->{'content'}{$host}{'services'}{$service}{'current_state'} == $djson->{'content'}{$host}{'services'}{$service}{'last_hard_state'} &&
+					$djson->{'content'}{$host}{'services'}{$service}{'notifications_enabled'}
+				) {
 					alert($host, $service, $djson);
 				}
-				print $sct ." : ". $host ." : ". $service ." : ". $djson->{'content'}{$host}{'services'}{$service}{'plugin_output'} ."\n";
 			}
 		}
 	}
